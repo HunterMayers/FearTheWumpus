@@ -1,5 +1,13 @@
-# Tiny Matrix
+# Fear The Wumpus
 
-This class allows for the creation of a matrix whose data type is 4 bits. It uses a contiguous chunk of memory and bitmasks to retrieve the desired index.
+This program requires SDL2 to be installed on your computer.
 
-This code is intentionally condensed.
+## Debian Linux
+
+apt-get install libsdl2-dev
+
+## Mac OS X
+
+Download the image here https://www.libsdl.org/release/SDL2-2.0.7.dmg.
+
+After downloading, you will need to place the framework in /Library/Frameworks/.
