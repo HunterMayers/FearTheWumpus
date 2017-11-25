@@ -12,8 +12,9 @@ using namespace std;
 unsigned char Agent::get_bits(unsigned int x, unsigned int y) {
   //gold - breeze - stench
   //1 == breeze 0000 0001
-  //5 == stench 0000 
-  //
+  //5 == stench 0000 0101
+  //2 == pit    0000 0010
+  //8 == wumpus 0000 1000
   unsigned char a = m_map->get(x,y);
   unsigned char b = 0;
   if(a == 1) {
