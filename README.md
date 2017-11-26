@@ -13,3 +13,13 @@ Download the following images
 * https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.2.dmg
 
 After downloading, you will need to place these frameworks in /Library/Frameworks/.
+
+# To Build
+
+## Debian Linux
+
+make linux
+
+## Mac OS X
+
+make osx
