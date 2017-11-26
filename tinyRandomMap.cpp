@@ -90,6 +90,16 @@ void tinyRandomMap::setMap(unsigned int a, unsigned int b, unsigned int seed, un
   tinyMat->Set(((roll>>2)+a)%a, (roll-b)%b, 0b1000);
   this->setupOrdinals(((roll>>2)+a)%a, (roll-b)%b, 0b1000);
 
+  roll >> 4;
+  while (roll%a == 0 && roll%b == 0) {
+    roll = roll >> 1;
+    if (roll == 0) {
+      roll = rollSeed(a, b, DEFAULT_SEED);
+    }
+  }
+
+  goldRow = ((roll>>2)+a)%a;
+  goldCol = (roll-b)%b;
   // XXX: I'm sorta assuming that you don't care about "phantom" signals, like a
   // breeze where there is no pit.  This will guarantee that (0,0) is always safe
   tinyMat->Set(0,0,0);
@@ -145,6 +155,19 @@ unsigned char tinyRandomMap::get(unsigned int a, unsigned int b) {
  */
 void tinyRandomMap::set(unsigned int a, unsigned int b, unsigned int val) {
   tinyMat->Set(a, b, val);
+}
+
+/**
+ * checks if the given cell has the gold
+ * @param  a the row to check
+ * @param  b the col to checks
+ * @return   true if the gold is there, false otherwise
+ */
+bool tinyRandomMap::hasGold(unsigned int a, unsigned int b) {
+  if (goldRow == a && goldCol == b) {
+    return true;
+  }
+  return false;
 }
 
 void tinyRandomMap::dimensions(unsigned int *row, unsigned int *col) {
