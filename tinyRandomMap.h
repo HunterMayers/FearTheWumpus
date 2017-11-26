@@ -6,6 +6,7 @@ class tinyRandomMap {
   private:
     TinyMatrix *tinyMat;
     void setupOrdinals(unsigned int, unsigned int, unsigned int);
+    void clearAndSetupOrdinals(unsigned int, unsigned int, unsigned int);
     void setMap(unsigned int, unsigned int, unsigned int, unsigned int);
 
   public:

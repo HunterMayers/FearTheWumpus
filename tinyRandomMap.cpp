@@ -56,6 +56,28 @@ void tinyRandomMap::setupOrdinals(unsigned int a, unsigned int b, unsigned int i
 }
 
 /**
+ * Clears and then sets the N, S, E and W values of the given matrix cell
+ * @param a     the row to start with
+ * @param b     the col to start with
+ * @param input the value being placed
+ */
+void clearAndSetupOrdinals(unsigned int a, unsigned int b, unsigned int input) {
+  int curr = 0;
+  input = input >> 1;
+
+  curr = tinyMat->Get(a-1, b);
+  tinyMat->Set(a-1, b, input);
+
+  curr = tinyMat->Get(a+1, b);
+  tinyMat->Set(a+1, b, input);
+
+  curr = tinyMat->Get(a, b-1);
+  tinyMat->Set(a, b-1, input);
+
+  curr = tinyMat->Get(a, b+1);
+  tinyMat->Set(a, b+1, input);
+}
+/**
  * Sets the map.  Places the pits, then places the wumpus.  CAN overwrite the values,
  * but this depends on the seed.  Pick a good long seed!
  * @param a       the number of matrix rows
@@ -87,8 +109,16 @@ void tinyRandomMap::setMap(unsigned int a, unsigned int b, unsigned int seed, un
       roll = rollSeed(a, b, DEFAULT_SEED);
     }
   }
-  tinyMat->Set(((roll>>2)+a)%a, (roll-b)%b, 0b1000);
-  this->setupOrdinals(((roll>>2)+a)%a, (roll-b)%b, 0b1000);
+  if (tinyMat->Get(((roll>>2)+a)%a, (roll-b)%b) == 0b0010) {
+    // if we're about to place over an extant pit, then clear the ordinals
+    tinyMat->Set(((roll>>2)+a)%a, (roll-b)%b, 0b1000);
+    this->clearAndSetupOrdinals(((roll>>2)+a)%a, (roll-b)%b, 0b1000);
+  }
+  else {
+    // else we want to OR the ordinals
+    tinyMat->Set(((roll>>2)+a)%a, (roll-b)%b, 0b1000);
+    this->setupOrdinals(((roll>>2)+a)%a, (roll-b)%b, 0b1000);
+  }
 
   // XXX: I'm sorta assuming that you don't care about "phantom" signals, like a
   // breeze where there is no pit.  This will guarantee that (0,0) is always safe
