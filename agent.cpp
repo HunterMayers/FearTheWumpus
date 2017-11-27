@@ -408,7 +408,7 @@ void Agent::update_current(unsigned int cur_x, unsigned int cur_y) {
     }
   }
   //print_nodes();
-  graphics.Render(this);
+  graphics.Render(this, agent_x_position, agent_y_position);
 }
 
 /*

@@ -38,7 +38,7 @@ Graphics::~Graphics() {
   SDL_DestroyWindow(window);
 }
 
-void Graphics::Render(Agent *p_agent) {
+void Graphics::Render(Agent *p_agent, int p_man_x, int p_man_y) {
   unsigned int row, col, x_offset, y_offset;
   unsigned char tile;
   SDL_Rect src, dst;
@@ -64,8 +64,10 @@ void Graphics::Render(Agent *p_agent) {
     }
   }
 
+  RenderTile(0x20, p_man_y*DESTINATION_TILE_WIDTH+x_offset, p_man_x*DESTINATION_TILE_HEIGHT+y_offset);
+
   SDL_RenderPresent(renderer);
-  SDL_Delay(250);
+  SDL_Delay(500);
 }
 
 void Graphics::RenderTile(unsigned char p_tile, int p_x, int p_y) {
@@ -96,6 +98,18 @@ void Graphics::RenderTile(unsigned char p_tile, int p_x, int p_y) {
       src.y = 0;
       SDL_RenderCopy(renderer, sprites, &src, &dst);
     } else {
+      if ((p_tile & 0x20) == 0x20) { /* if man */
+        src.x = 0;
+        src.y = 1*SOURCE_TILE_HEIGHT;
+        SDL_RenderCopy(renderer, sprites, &src, &dst);
+      }
+
+      if ((p_tile & 0x10) == 0x10) { /* if gold */
+        src.x = 1*SOURCE_TILE_WIDTH;
+        src.y = 1*SOURCE_TILE_HEIGHT;
+        SDL_RenderCopy(renderer, sprites, &src, &dst);
+      }
+
       if ((p_tile & 0x4) == 0x4) { /* if stench */
         src.x = 0;
         src.y = 0;

@@ -21,7 +21,7 @@ class Graphics {
   public:
     Graphics();
     ~Graphics();
-    void Render(Agent *p_agent);
+    void Render(Agent *p_agent, int p_man_x, int p_man_y);
     void RenderTile(unsigned char p_tile, int p_x, int p_y);
     SDL_Rect SetSource(unsigned char p_tile);
 
