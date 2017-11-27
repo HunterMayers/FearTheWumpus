@@ -87,6 +87,17 @@ void Graphics::RenderTile(unsigned char p_tile, int p_x, int p_y) {
     src.y = 1*SOURCE_TILE_WIDTH;
     SDL_RenderCopy(renderer, sprites, &src, &dst);
 
+    if ((p_tile & 0x10) == 0x10) { /* if gold */
+      src.x = 1*SOURCE_TILE_WIDTH;
+      src.y = 1*SOURCE_TILE_HEIGHT;
+      SDL_RenderCopy(renderer, sprites, &src, &dst);
+    }
+
+    if((p_tile & 0x20) == 0x20) { /*if man */
+      src.x = 0;
+      src.y = 1*SOURCE_TILE_WIDTH;
+      SDL_RenderCopy(renderer, sprites, &src, &dst);
+    }
     if ((p_tile & 0x8) == 0x8) { /* if wumpus */
       src.x = 1*SOURCE_TILE_WIDTH;
       src.y = 0;

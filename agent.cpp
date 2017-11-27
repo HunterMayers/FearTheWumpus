@@ -79,7 +79,9 @@ unsigned char Agent::get_internal_bits(unsigned int x, unsigned int y) {
   }
   
   bits |= (m_map->get(x,y) & 0x5);
-  bits |= (m_map->hasGold(x, y)) ? 0x10 : 0x0;
+  bits |= (agent_has_gold && (x == agent_x_position && y == agent_y_position)) ? 0x10 : 0x0;
+  bits |= (m_map->hasGold(x,y) && !agent_has_gold) ? 0x10: 0x0;
+  bits |= (x == agent_x_position && y == agent_y_position) ? 0x20 : 0x0;
 
   return bits;
 }
@@ -219,7 +221,7 @@ void Agent::update_current(unsigned int cur_x, unsigned int cur_y) {
   unsigned char bits = get_bits(cur_x, cur_y);
   bool breeze, stench, wumpus, pit;
   //Check if current node has the gold
-  if(bits & 0x16) {
+  if(bits & 0x10) {
     agent_has_gold = true;
     //return_home();
   }
