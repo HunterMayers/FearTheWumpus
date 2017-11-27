@@ -3,11 +3,12 @@
 
 #include <vector>
 #include "graphics.h"
-#include "tinyRandomMap.h"
+//#include "tinyRandomMap.h"
+#include "largeRandomMap.h"
 
 class Agent {
 public:
-  Agent(unsigned int, tinyRandomMap *);
+  Agent(unsigned int, largeRandomMap *);
   ~Agent();
   bool is_safe(unsigned int, unsigned int);
   void print_nodes();
@@ -37,7 +38,7 @@ private:
   unsigned int agent_x_position;
   unsigned int agent_y_position;
   unsigned int m_dimension;
-  tinyRandomMap * m_map;
+  largeRandomMap * m_map;
   Graphics graphics;
   bool agent_has_gold;
 protected:

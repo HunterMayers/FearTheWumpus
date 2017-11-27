@@ -117,7 +117,7 @@ void Agent::move(char move) {
 * @param dimension The size of the matrix(dimension x dimension)
 * @param tinyRandomMap* A pointer to the external map
 */
-Agent::Agent(unsigned int dimension, tinyRandomMap *m) {
+Agent::Agent(unsigned int dimension, largeRandomMap *m) {
   m_map = m;
   m_dimension = dimension;
   internal_map.resize(dimension);
