@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include "agent.h"
-#include "tinyRandomMap.h"
+#include <unistd.h>
 
 using namespace std;
 
@@ -148,6 +148,7 @@ Agent::~Agent() {
  * Prints out the map in ascii characters for testing/debugging.
  * */
 void Agent::print_nodes() {
+  cout << "----------\n";
   for(unsigned int i = 0; i < internal_map.size(); ++i) {
     for(unsigned int j = 0; j < internal_map[i].size(); ++j) {
       if(agent_x_position == i && agent_y_position == j) {
@@ -181,6 +182,7 @@ void Agent::print_nodes() {
     }
     cout << '\n';
   }
+  usleep(250000);
 }
 
 /*
@@ -204,7 +206,6 @@ void Agent::return_home() {
   Node * cur_node = internal_map[agent_x_position][agent_y_position];
   while(cur_node->parent) {
     DFS_move(cur_node->parent->node_x_position, cur_node->parent->node_y_position);
-    Render(this);
   }
 }
 
@@ -220,7 +221,7 @@ void Agent::update_current(unsigned int cur_x, unsigned int cur_y) {
   //Check if current node has the gold
   if(bits & 0x16) {
     agent_has_gold = true;
-    return_home();
+    //return_home();
   }
   //This section updates the current status of the node we are in
   if(bits & 0x1) {
@@ -406,7 +407,8 @@ void Agent::update_current(unsigned int cur_x, unsigned int cur_y) {
       }
     }
   }
-  print_nodes();
+  //print_nodes();
+  graphics.Render(this);
 }
 
 /*
@@ -436,37 +438,34 @@ void Agent::traverse_matrix() {
 * @param u The node we are current calling matrix_DFS_visit on.
 */
 void Agent::matrix_DFS_visit(Node * u) {
-  //Check to see if we already found the gold, if we have we shouldn't continue looking.
-  if(!agent_has_gold) {
-    u->color = Node::gray;
-    unsigned int cur_x = u->node_x_position;
-    unsigned int cur_y = u->node_y_position;
-    //explore right edge
-    if(cur_y < m_dimension - 1 && is_safe(cur_x, cur_y + 1) && internal_map[cur_x][cur_y + 1]->color == Node::white) {
-      DFS_move(cur_x, cur_y + 1);
-      matrix_DFS_visit(internal_map[cur_x][cur_y + 1]);
-      DFS_move(cur_x, cur_y);
-    }
-    //explore down edge
-    if(cur_x < m_dimension - 1 && is_safe(cur_x + 1, cur_y) && internal_map[cur_x + 1][cur_y]->color == Node::white) {
-      DFS_move(cur_x + 1, cur_y);
-      matrix_DFS_visit(internal_map[cur_x + 1][cur_y]);
-      DFS_move(cur_x, cur_y);
-    }
-    //explore left edge
-    if(cur_y > 0 && is_safe(cur_x, cur_y - 1) && internal_map[cur_x][cur_y - 1]->color == Node::white) {
-      DFS_move(cur_x, cur_y - 1);
-      matrix_DFS_visit(internal_map[cur_x][cur_y - 1]);
-      DFS_move(cur_x, cur_y);
-    }
-    //explore up edge
-    if(cur_x > 0 && is_safe(cur_x - 1, cur_y) && internal_map[cur_x - 1][cur_y]->color == Node::white) {
-      DFS_move(cur_x - 1, cur_y);
-      matrix_DFS_visit(internal_map[cur_x - 1][cur_y]);
-      DFS_move(cur_x, cur_y);
-    }
-    u->color = Node::black;
+  u->color = Node::gray;
+  unsigned int cur_x = u->node_x_position;
+  unsigned int cur_y = u->node_y_position;
+  //explore right edge
+  if(cur_y < m_dimension - 1 && is_safe(cur_x, cur_y + 1) && internal_map[cur_x][cur_y + 1]->color == Node::white && !agent_has_gold) {
+    DFS_move(cur_x, cur_y + 1);
+    matrix_DFS_visit(internal_map[cur_x][cur_y + 1]);
+    DFS_move(cur_x, cur_y);
   }
+  //explore down edge
+  if(cur_x < m_dimension - 1 && is_safe(cur_x + 1, cur_y) && internal_map[cur_x + 1][cur_y]->color == Node::white && !agent_has_gold) {
+    DFS_move(cur_x + 1, cur_y);
+    matrix_DFS_visit(internal_map[cur_x + 1][cur_y]);
+    DFS_move(cur_x, cur_y);
+  }
+  //explore left edge
+  if(cur_y > 0 && is_safe(cur_x, cur_y - 1) && internal_map[cur_x][cur_y - 1]->color == Node::white && !agent_has_gold) {
+    DFS_move(cur_x, cur_y - 1);
+    matrix_DFS_visit(internal_map[cur_x][cur_y - 1]);
+    DFS_move(cur_x, cur_y);
+  }
+  //explore up edge
+  if(cur_x > 0 && is_safe(cur_x - 1, cur_y) && internal_map[cur_x - 1][cur_y]->color == Node::white && !agent_has_gold) {
+    DFS_move(cur_x - 1, cur_y);
+    matrix_DFS_visit(internal_map[cur_x - 1][cur_y]);
+    DFS_move(cur_x, cur_y);
+  }
+  u->color = Node::black;
 }
 
 /*

@@ -9,20 +9,20 @@
 	#include <SDL2_image/SDL_image.h>
 #endif
 
-#include "tinyRandomMap.h"
-
 #define SOURCE_TILE_WIDTH 128
 #define SOURCE_TILE_HEIGHT 128
 
 #define DESTINATION_TILE_WIDTH 32
 #define DESTINATION_TILE_HEIGHT 32
 
+class Agent;
+
 class Graphics {
   public:
     Graphics();
     ~Graphics();
-    void Render(tinyRandomMap *p_map);
-    void RenderTile(unsigned char p_tile, int x, int y);
+    void Render(Agent *p_agent);
+    void RenderTile(unsigned char p_tile, int p_x, int p_y);
     SDL_Rect SetSource(unsigned char p_tile);
 
   private:

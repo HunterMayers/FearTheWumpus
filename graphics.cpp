@@ -1,4 +1,5 @@
 #include "graphics.h"
+#include "agent.h"
 
 Graphics::Graphics() {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) == 0) {
@@ -37,7 +38,7 @@ Graphics::~Graphics() {
   SDL_DestroyWindow(window);
 }
 
-void Graphics::Render(tinyRandomMap *p_map) {
+void Graphics::Render(Agent *p_agent) {
   unsigned int row, col, x_offset, y_offset;
   unsigned char tile;
   SDL_Rect src, dst;
@@ -49,23 +50,25 @@ void Graphics::Render(tinyRandomMap *p_map) {
   dst.w = DESTINATION_TILE_WIDTH;
   dst.h = DESTINATION_TILE_HEIGHT;
 
-  p_map->dimensions(&row, &col);
+  row = 16;
+  col = 16;
 
   x_offset = (screen_width-DESTINATION_TILE_WIDTH*col)/2;
   y_offset = (screen_height-DESTINATION_TILE_HEIGHT*row)/2;
 
   for (int i = 0; i < row; i++) {
     for (int j = 0; j < col; j++) {
-      tile = p_map->get(i, j);
+      tile = p_agent->get_internal_bits(i, j);
 
       RenderTile(tile, j*DESTINATION_TILE_WIDTH+x_offset, i*DESTINATION_TILE_HEIGHT+y_offset);
     }
   }
 
   SDL_RenderPresent(renderer);
+  SDL_Delay(250);
 }
 
-void Graphics::RenderTile(unsigned char p_tile, int x, int y) {
+void Graphics::RenderTile(unsigned char p_tile, int p_x, int p_y) {
   SDL_Rect src, dst;
 
   src.w = SOURCE_TILE_WIDTH;
@@ -74,8 +77,8 @@ void Graphics::RenderTile(unsigned char p_tile, int x, int y) {
 
   dst.w = DESTINATION_TILE_WIDTH;
   dst.h = DESTINATION_TILE_HEIGHT;
-  dst.x = x;
-  dst.y = y;
+  dst.x = p_x;
+  dst.y = p_y;
 
   if ((p_tile & 0xA) == 0xA) { /* if unknown */
     SDL_RenderFillRect(renderer, &dst);

@@ -2,6 +2,7 @@
 #define AGENT_H
 
 #include <vector>
+#include "graphics.h"
 #include "tinyRandomMap.h"
 
 class Agent {
@@ -37,6 +38,7 @@ private:
   unsigned int agent_y_position;
   unsigned int m_dimension;
   tinyRandomMap * m_map;
+  Graphics graphics;
   bool agent_has_gold;
 protected:
 };
