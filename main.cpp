@@ -10,11 +10,6 @@ int main(int argc, char **argv) {
   //Graphics graphics;
   tinyRandomMap map(n, n, 0x0420FEFD, 96);
   Agent * a = new Agent(n, &map);
-  a->print_m_map();
-  //char input;
-  //while(std::cin >> input) {
-  //  a->move(input);
-  //}
   a->traverse_matrix();
 
 
