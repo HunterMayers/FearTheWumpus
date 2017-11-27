@@ -25,18 +25,22 @@ unsigned char Agent::get_bits(unsigned int x, unsigned int y) {
   //2 == pit    0000 0010
   //8 == wumpus 0000 1000
   unsigned char a = m_map->get(x,y);
+  bool c = m_map->hasGold(x, y);
   unsigned char b = 0;
-  if(a == 1) {
+  if(a & 0x1) {
     b |= 0x1;
   }
-  if(a == 5) {
+  if(a & 0x4) {
     b |= 0x2;
   }
-  if(a == 2) {
+  if(a & 0x2) {
     b |= 0x3;
   }
-  if(a == 8) {
+  if(a & 0x8) {
     b |= 0x4;
+  }
+  if(c) {
+    b |= 0x16;
   }
   return b;
 }
@@ -83,6 +87,7 @@ Agent::Agent(unsigned int dimension, tinyRandomMap *m) {
   }
   //set up initial player position
   time = 0;
+  agent_has_gold = false;
   agent_x_position = dimension - 1;
   agent_y_position = 0;
   update_current(agent_x_position, agent_y_position);
@@ -106,7 +111,12 @@ void Agent::print_nodes() {
   for(unsigned int i = 0; i < internal_map.size(); ++i) {
     for(unsigned int j = 0; j < internal_map[i].size(); ++j) {
       if(agent_x_position == i && agent_y_position == j) {
-        cout << "AA" << ' ';
+        if(agent_has_gold) {
+          cout << "AG" << ' ';
+        }
+        else {
+          cout << "AA" << ' ';
+        }
       }
       else {
         if(internal_map[i][j]->pit == Node::clear) {
@@ -149,12 +159,23 @@ Agent::Node::Node(unsigned int i, unsigned int j, int value) {
   f = 0;
 }
 
+void Agent::return_home() {
+  Node * cur_node = internal_map[agent_x_position][agent_y_position];
+  while(cur_node->parent) {
+    DFS_move(cur_node->parent->node_x_position, cur_node->parent->node_y_position);
+  }
+}
+
 /*
  * Updates the current node based on current location factors
  * */
 void Agent::update_current(unsigned int cur_x, unsigned int cur_y) {
   unsigned char bits = get_bits(cur_x, cur_y);
   bool breeze, stench, wumpus, pit;
+  if(bits & 0x16) {
+    agent_has_gold = true;
+    return_home();
+  }
   if(bits & 0x1) {
     breeze = true;
   }
@@ -365,44 +386,46 @@ void Agent::traverse_matrix() {
 }
 
 void Agent::matrix_DFS_visit(Node * u) {
-  time = time + 1;
-  u->d = time;
-  u->color = Node::gray;
-  unsigned int cur_x = u->node_x_position;
-  unsigned int cur_y = u->node_y_position;
-  //explore right edge
-  if(cur_y < m_dimension - 1 && is_safe(cur_x, cur_y + 1) && internal_map[cur_x][cur_y + 1]->color == Node::white) {
-    DFS_move(cur_x, cur_y + 1);
-    matrix_DFS_visit(internal_map[cur_x][cur_y + 1]);
-    DFS_move(cur_x, cur_y);
+  if(!agent_has_gold) {
+    time = time + 1;
+    u->d = time;
+    u->color = Node::gray;
+    unsigned int cur_x = u->node_x_position;
+    unsigned int cur_y = u->node_y_position;
+    //explore right edge
+    if(cur_y < m_dimension - 1 && is_safe(cur_x, cur_y + 1) && internal_map[cur_x][cur_y + 1]->color == Node::white) {
+      DFS_move(cur_x, cur_y + 1);
+      matrix_DFS_visit(internal_map[cur_x][cur_y + 1]);
+      DFS_move(cur_x, cur_y);
+    }
+    //explore down edge
+    if(cur_x < m_dimension - 1 && is_safe(cur_x + 1, cur_y) && internal_map[cur_x + 1][cur_y]->color == Node::white) {
+      DFS_move(cur_x + 1, cur_y);
+      matrix_DFS_visit(internal_map[cur_x + 1][cur_y]);
+      DFS_move(cur_x, cur_y);
+    }
+    //explore left edge
+    if(cur_y > 0 && is_safe(cur_x, cur_y - 1) && internal_map[cur_x][cur_y - 1]->color == Node::white) {
+      DFS_move(cur_x, cur_y - 1);
+      matrix_DFS_visit(internal_map[cur_x][cur_y - 1]);
+      DFS_move(cur_x, cur_y);
+    }
+    //explore up edge
+    if(cur_x > 0 && is_safe(cur_x - 1, cur_y) && internal_map[cur_x - 1][cur_y]->color == Node::white) {
+      DFS_move(cur_x - 1, cur_y);
+      matrix_DFS_visit(internal_map[cur_x - 1][cur_y]);
+      DFS_move(cur_x, cur_y);
+    }
+    u->color = Node::black;
+    time = time + 1;
+    u->f = time;
+    //return also back agent up to parent
+    /*
+    if(u->parent != NULL) {
+      DFS_move(u->parent->node_x_position, u->parent->node_y_position);
+    }
+    */
   }
-  //explore down edge
-  if(cur_x < m_dimension - 1 && is_safe(cur_x + 1, cur_y) && internal_map[cur_x + 1][cur_y]->color == Node::white) {
-    DFS_move(cur_x + 1, cur_y);
-    matrix_DFS_visit(internal_map[cur_x + 1][cur_y]);
-    DFS_move(cur_x, cur_y);
-  }
-  //explore left edge
-  if(cur_y > 0 && is_safe(cur_x, cur_y - 1) && internal_map[cur_x][cur_y - 1]->color == Node::white) {
-    DFS_move(cur_x, cur_y - 1);
-    matrix_DFS_visit(internal_map[cur_x][cur_y - 1]);
-    DFS_move(cur_x, cur_y);
-  }
-  //explore up edge
-  if(cur_x > 0 && is_safe(cur_x - 1, cur_y) && internal_map[cur_x - 1][cur_y]->color == Node::white) {
-    DFS_move(cur_x - 1, cur_y);
-    matrix_DFS_visit(internal_map[cur_x - 1][cur_y]);
-    DFS_move(cur_x, cur_y);
-  }
-  u->color = Node::black;
-  time = time + 1;
-  u->f = time;
-  //return also back agent up to parent
-  /*
-  if(u->parent != NULL) {
-    DFS_move(u->parent->node_x_position, u->parent->node_y_position);
-  }
-  */
 }
 
 void Agent::DFS_move(unsigned int x, unsigned int y) {

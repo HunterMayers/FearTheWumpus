@@ -18,6 +18,7 @@ public:
   unsigned char get_bits(unsigned int, unsigned int);
   void DFS_move(unsigned int, unsigned int);
   void traverse_matrix();
+  void return_home();
 private:
   class Node {
   public:
@@ -42,6 +43,7 @@ private:
   unsigned int m_dimension;
   tinyRandomMap * m_map;
   int time;
+  bool agent_has_gold;
 protected:
 };
 #endif
