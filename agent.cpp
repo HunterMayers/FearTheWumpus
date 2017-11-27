@@ -443,6 +443,7 @@ void Agent::found_wumpus() {
 * Causes our agent to traverse the matrix and look for the gold.
 */
 void Agent::traverse_matrix() {
+  sleep(2);
   matrix_DFS_visit(internal_map[agent_x_position][agent_y_position]);
 }
 
