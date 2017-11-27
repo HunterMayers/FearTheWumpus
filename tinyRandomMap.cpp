@@ -61,7 +61,7 @@ void tinyRandomMap::setupOrdinals(unsigned int a, unsigned int b, unsigned int i
  * @param b     the col to start with
  * @param input the value being placed
  */
-void clearAndSetupOrdinals(unsigned int a, unsigned int b, unsigned int input) {
+void tinyRandomMap::clearAndSetupOrdinals(unsigned int a, unsigned int b, unsigned int input) {
   int curr = 0;
   input = input >> 1;
 
@@ -120,7 +120,7 @@ void tinyRandomMap::setMap(unsigned int a, unsigned int b, unsigned int seed, un
     this->setupOrdinals(((roll>>2)+a)%a, (roll-b)%b, 0b1000);
   }
 
-  roll >> 4;
+  roll = roll >> 4;
   while (roll%a == 0 && roll%b == 0) {
     roll = roll >> 1;
     if (roll == 0) {
