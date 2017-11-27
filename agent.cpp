@@ -50,9 +50,38 @@ unsigned char Agent::get_bits(unsigned int x, unsigned int y) {
     b |= 0x4;
   }
   if(c) {
-    b |= 0x16;
+    b |= 0x10;
   }
   return b;
+}
+
+/*
+* Returns the bitwise state of the knowledge that the agent
+* has on a given cell.
+* @param x the vertical index into matrix
+* @param y the horizontal index into matrix
+* @return unsigned char Has bits flipped if one of the possible
+*                       values if present 0th is right most bit:
+*                                          0th bit - breeze
+*                                          1st bit - pit
+*                                          2nd bit - stench
+*                                          3rd bit - wumpus
+*                                          4th bit - gold 
+*/
+unsigned char Agent::get_internal_bits(unsigned int x, unsigned int y) {
+  unsigned char bits = 0;
+
+  if((internal_map[x][y]->pit == Node::present) || (internal_map[x][y]->pit == Node::unknown)) {
+    bits |= 0x2;
+  }
+  if((internal_map[x][y]->wumpus == Node::present) || (internal_map[x][y]->wumpus == Node::unknown)) {
+    bits |= 0x8;
+  }
+  
+  bits |= (m_map->get(x,y) & 0x5);
+  bits |= (m_map->hasGold(x, y)) ? 0x10 : 0x0;
+
+  return bits;
 }
 
 /*
@@ -175,6 +204,7 @@ void Agent::return_home() {
   Node * cur_node = internal_map[agent_x_position][agent_y_position];
   while(cur_node->parent) {
     DFS_move(cur_node->parent->node_x_position, cur_node->parent->node_y_position);
+    Render(this);
   }
 }
 

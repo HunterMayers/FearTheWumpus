@@ -14,6 +14,7 @@ public:
   void move(char);
   void found_wumpus();
   unsigned char get_bits(unsigned int, unsigned int);
+  unsigned char get_internal_bits(unsigned int, unsigned int);
   void DFS_move(unsigned int, unsigned int);
   void traverse_matrix();
   void return_home();

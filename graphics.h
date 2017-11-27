@@ -11,14 +11,18 @@
 
 #include "tinyRandomMap.h"
 
-#define TILE_WIDTH 16
-#define TILE_HEIGHT 16
+#define SOURCE_TILE_WIDTH 128
+#define SOURCE_TILE_HEIGHT 128
+
+#define DESTINATION_TILE_WIDTH 32
+#define DESTINATION_TILE_HEIGHT 32
 
 class Graphics {
   public:
     Graphics();
     ~Graphics();
     void Render(tinyRandomMap *p_map);
+    void RenderTile(unsigned char p_tile, int x, int y);
     SDL_Rect SetSource(unsigned char p_tile);
 
   private:
