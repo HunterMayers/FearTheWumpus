@@ -6,6 +6,12 @@
 using namespace std;
 
 
+/*
+* Checks if cell is safe to move to
+* @param x the vertical index into matrix
+* @param y the horizontal index into matrix
+* @return bool true if safe, false if unsafe
+*/
 bool Agent::is_safe(unsigned int x, unsigned int y) {
   if(internal_map[x][y]->pit == Node::clear && internal_map[x][y]->wumpus == Node::clear) {
     return true;
@@ -14,16 +20,20 @@ bool Agent::is_safe(unsigned int x, unsigned int y) {
     return false;
   }
 };
+
 /*
-* This function interfaces with our map pointer
-* to get the current status of our curr position.
-* */
+* Interface with external map to get data on cells
+* @param x the vertical index into matrix
+* @param y the horizontal index into matrix
+* @return unsigned char Has bits flipped if one of the possible
+*                       values if present 0th is right most bit:
+*                                          0th bit - breeze
+*                                          1st bit - pit
+*                                          2nd bit - stench
+*                                          3rd bit - wumpus
+*                                          4th bit - gold 
+*/
 unsigned char Agent::get_bits(unsigned int x, unsigned int y) {
-  //gold - breeze - stench
-  //1 == breeze 0000 0001
-  //5 == stench 0000 0101
-  //2 == pit    0000 0010
-  //8 == wumpus 0000 1000
   unsigned char a = m_map->get(x,y);
   bool c = m_map->hasGold(x, y);
   unsigned char b = 0;
@@ -46,8 +56,9 @@ unsigned char Agent::get_bits(unsigned int x, unsigned int y) {
 }
 
 /*
- * This function is for testing you can move around
- * */
+* Allows input so you can manually move around agent
+* @param move Takes either h,j,k,l to move in their vim-direction
+*/
 void Agent::move(char move) {
   if(move == 'h') {
     if(agent_y_position > 0 && is_safe(agent_x_position, agent_y_position - 1)) {
@@ -73,8 +84,10 @@ void Agent::move(char move) {
 }
 
 /*
- * Initialize starting position and internal map
- * */
+* Initializes agent variables and creates the internal map
+* @param dimension The size of the matrix(dimension x dimension)
+* @param tinyRandomMap* A pointer to the external map
+*/
 Agent::Agent(unsigned int dimension, tinyRandomMap *m) {
   m_map = m;
   m_dimension = dimension;
@@ -82,11 +95,9 @@ Agent::Agent(unsigned int dimension, tinyRandomMap *m) {
   for(unsigned int i = 0; i < dimension; ++i) {
     internal_map[i].resize(dimension);
     for(unsigned int j = 0; j < dimension; ++j) {
-      internal_map[i][j] = new Node(i, j, i * dimension + j);
+      internal_map[i][j] = new Node(i, j);
     }
   }
-  //set up initial player position
-  time = 0;
   agent_has_gold = false;
   agent_x_position = dimension - 1;
   agent_y_position = 0;
@@ -94,8 +105,8 @@ Agent::Agent(unsigned int dimension, tinyRandomMap *m) {
 }
 
 /*
- * Free up any nodes once the agent is done
- * */
+* Free up any nodes once the agent is done
+**/
 Agent::~Agent() {
   for(unsigned int i = 0; i < internal_map.size(); ++i) {
     for(unsigned int j = 0; j < internal_map[i].size(); ++j) {
@@ -105,7 +116,7 @@ Agent::~Agent() {
 }
 
 /*
- * Prints out the map in ascii characters
+ * Prints out the map in ascii characters for testing/debugging.
  * */
 void Agent::print_nodes() {
   for(unsigned int i = 0; i < internal_map.size(); ++i) {
@@ -144,21 +155,22 @@ void Agent::print_nodes() {
 }
 
 /*
- * Creates a node intializing starting values
- * */
-Agent::Node::Node(unsigned int i, unsigned int j, int value) {
-  m_value = value;
+* Creates a node intializing starting values.
+* @param i The vertical index of this node
+* @param j The horizontal index of this node
+**/
+Agent::Node::Node(unsigned int i, unsigned int j) {
   node_x_position = i;
   node_y_position = j;
   wumpus = unknown;
   pit = unknown;
-  safe = false;
   parent = NULL;
   color = white;
-  d = 0;
-  f = 0;
 }
 
+/*
+* Function to traverse parent array once the agent finds the gold.
+*/
 void Agent::return_home() {
   Node * cur_node = internal_map[agent_x_position][agent_y_position];
   while(cur_node->parent) {
@@ -167,15 +179,20 @@ void Agent::return_home() {
 }
 
 /*
- * Updates the current node based on current location factors
- * */
+* Updates the current node and nodes left, right, up, and down of current node.
+* @param unsigned int The vertical index of current node
+* @param unsigned int The horizontal index of current node
+**/
 void Agent::update_current(unsigned int cur_x, unsigned int cur_y) {
+  //Get the bits(status) of the current node
   unsigned char bits = get_bits(cur_x, cur_y);
   bool breeze, stench, wumpus, pit;
+  //Check if current node has the gold
   if(bits & 0x16) {
     agent_has_gold = true;
     return_home();
   }
+  //This section updates the current status of the node we are in
   if(bits & 0x1) {
     breeze = true;
   }
@@ -362,6 +379,11 @@ void Agent::update_current(unsigned int cur_x, unsigned int cur_y) {
   print_nodes();
 }
 
+/*
+* This function is called after we find the wumpus, since there is
+* only one wumpus we can set every other node to be safe from having
+* the wumpus.
+*/
 void Agent::found_wumpus() {
   for(unsigned int i = 0; i < internal_map.size(); ++i) {
     for(unsigned int j = 0; j < internal_map[i].size(); ++j) {
@@ -372,23 +394,20 @@ void Agent::found_wumpus() {
   }
 }
 
-void Agent::print_m_map() {
-  for(unsigned int i = 0; i < m_dimension; ++i) {
-    for(unsigned int j = 0; j < m_dimension; ++j) {
-      cout << (unsigned int)(m_map->get(i,j)) << ' ';
-    }
-    cout << '\n';
-  }
-}
-
+/*
+* Causes our agent to traverse the matrix and look for the gold.
+*/
 void Agent::traverse_matrix() {
   matrix_DFS_visit(internal_map[agent_x_position][agent_y_position]);
 }
 
+/*
+* The DFS implementation that our agent uses to traverse the matrix.
+* @param u The node we are current calling matrix_DFS_visit on.
+*/
 void Agent::matrix_DFS_visit(Node * u) {
+  //Check to see if we already found the gold, if we have we shouldn't continue looking.
   if(!agent_has_gold) {
-    time = time + 1;
-    u->d = time;
     u->color = Node::gray;
     unsigned int cur_x = u->node_x_position;
     unsigned int cur_y = u->node_y_position;
@@ -417,17 +436,15 @@ void Agent::matrix_DFS_visit(Node * u) {
       DFS_move(cur_x, cur_y);
     }
     u->color = Node::black;
-    time = time + 1;
-    u->f = time;
-    //return also back agent up to parent
-    /*
-    if(u->parent != NULL) {
-      DFS_move(u->parent->node_x_position, u->parent->node_y_position);
-    }
-    */
   }
 }
 
+/*
+* A method to allow our agent to move around in the matrix to stay in step with
+* our DFS algorithm.
+* @param x The vertical position in our matrix we are moving to.
+* @param y The horizontal position in our matrix we are moving to.
+*/
 void Agent::DFS_move(unsigned int x, unsigned int y) {
   agent_x_position = x;
   agent_y_position = y;
