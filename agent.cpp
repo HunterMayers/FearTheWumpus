@@ -71,17 +71,32 @@ unsigned char Agent::get_bits(unsigned int x, unsigned int y) {
 unsigned char Agent::get_internal_bits(unsigned int x, unsigned int y) {
   unsigned char bits = 0;
 
-  if((internal_map[x][y]->pit == Node::present) || (internal_map[x][y]->pit == Node::unknown)) {
+  if(internal_map[x][y]->pit == Node::present) {
     bits |= 0x2;
   }
-  if((internal_map[x][y]->wumpus == Node::present) || (internal_map[x][y]->wumpus == Node::unknown)) {
+  if(internal_map[x][y]->wumpus == Node::present) {
     bits |= 0x8;
   }
   
-  bits |= (m_map->get(x,y) & 0x5);
+  //bits |= (m_map->get(x,y) & 0x5);
+  if(internal_map[x][y]->breeze) {
+    bits |= 0x1;
+  }
+  if(internal_map[x][y]->stench) {
+    bits |= 0x4;
+  }
+  if(internal_map[x][y]->visited) {
+    bits |= 0x40;
+  }
+  
   bits |= (agent_has_gold && (x == agent_x_position && y == agent_y_position)) ? 0x10 : 0x0;
-  bits |= (m_map->hasGold(x,y) && !agent_has_gold) ? 0x10: 0x0;
+  //bits |= (m_map->hasGold(x,y) && !agent_has_gold) ? 0x10: 0x0;
   bits |= (x == agent_x_position && y == agent_y_position) ? 0x20 : 0x0;
+
+  if(!(bits & 0x7F)) {
+    bits |= 0x80;
+
+  }
 
   return bits;
 }
@@ -199,16 +214,9 @@ Agent::Node::Node(unsigned int i, unsigned int j) {
   pit = unknown;
   parent = NULL;
   color = white;
-}
-
-/*
-* Function to traverse parent array once the agent finds the gold.
-*/
-void Agent::return_home() {
-  Node * cur_node = internal_map[agent_x_position][agent_y_position];
-  while(cur_node->parent) {
-    DFS_move(cur_node->parent->node_x_position, cur_node->parent->node_y_position);
-  }
+  stench = false;
+  breeze = false;
+  visited = false;
 }
 
 /*
@@ -220,23 +228,27 @@ void Agent::update_current(unsigned int cur_x, unsigned int cur_y) {
   //Get the bits(status) of the current node
   unsigned char bits = get_bits(cur_x, cur_y);
   bool breeze, stench, wumpus, pit;
+  internal_map[cur_x][cur_y]->visited = true;
   //Check if current node has the gold
   if(bits & 0x10) {
     agent_has_gold = true;
-    //return_home();
   }
   //This section updates the current status of the node we are in
   if(bits & 0x1) {
     breeze = true;
+    internal_map[cur_x][cur_y]->breeze = true;
   }
   else {
     breeze = false;
+    internal_map[cur_x][cur_y]->breeze = false;
   }
   if(bits & 0x2) {
     stench = true;
+    internal_map[cur_x][cur_y]->stench = true;
   }
   else {
     stench = false;
+    internal_map[cur_x][cur_y]->stench = false;;
   }
   if(bits & 0x3) {
     pit = true;
@@ -409,7 +421,6 @@ void Agent::update_current(unsigned int cur_x, unsigned int cur_y) {
       }
     }
   }
-  //print_nodes();
   graphics.Render(this);
 }
 

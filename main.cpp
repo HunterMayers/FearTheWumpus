@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
   unsigned int n = 16;
 
   //tinyRandomMap map(n, n, 0x0420FEFD, 96);
-  largeRandomMap map(n, 10);
+  largeRandomMap map(n, 15);
   Agent agent(n, &map);
   agent.traverse_matrix();
 

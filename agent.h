@@ -19,7 +19,6 @@ public:
   unsigned char get_internal_bits(unsigned int, unsigned int);
   void DFS_move(unsigned int, unsigned int);
   void traverse_matrix();
-  void return_home();
 private:
   class Node {
   public:
@@ -28,6 +27,9 @@ private:
     enum State {present, clear, unknown};
     State wumpus;
     State pit;
+    bool breeze;
+    bool stench;
+    bool visited;
     Node * parent;
     Color color;
     unsigned int node_x_position;
