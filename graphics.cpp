@@ -68,7 +68,7 @@ void Graphics::Render(Agent *p_agent, int p_man_x, int p_man_y) {
 
   SDL_RenderPresent(renderer);
   HandleInput();
-  SDL_Delay(50);
+  SDL_Delay(250);
 }
 
 void Graphics::RenderTile(unsigned char p_tile, unsigned int p_dir, int p_x, int p_y) {

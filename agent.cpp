@@ -238,14 +238,16 @@ void Agent::update_current(unsigned int cur_x, unsigned int cur_y) {
   if(bits & 0x10) {
     agent_has_gold = true;
   }
-  if (xdiff < 0) {
-    internal_map[cur_x][cur_y]->dir = north;
-  } else if (xdiff) {
-    internal_map[cur_x][cur_y]->dir = south;
-  } else if (ydiff < 0) {
-    internal_map[cur_x][cur_y]->dir = west;
-  } else if (ydiff) {
-    internal_map[cur_x][cur_y]->dir = east;
+  if (internal_map[cur_x][cur_y]->dir == none) {
+    if (xdiff < 0) {
+      internal_map[cur_x][cur_y]->dir = south;
+    } else if (xdiff) {
+      internal_map[cur_x][cur_y]->dir = north;
+    } else if (ydiff < 0) {
+      internal_map[cur_x][cur_y]->dir = west;
+    } else if (ydiff) {
+      internal_map[cur_x][cur_y]->dir = east;
+    }
   }
   //This section updates the current status of the node we are in
   if(bits & 0x1) {
