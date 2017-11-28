@@ -464,6 +464,16 @@ void Agent::found_wumpus() {
 void Agent::traverse_matrix() {
   sleep(GRAPHICS_DELAY);
   matrix_DFS_visit(internal_map[agent_x_position][agent_y_position]);
+  
+  if (agent_has_gold) {
+    // display found
+  } else {
+    // display not found
+  }
+
+  while (1) {
+    graphics.HandleInput();
+  }
 }
 
 /*
