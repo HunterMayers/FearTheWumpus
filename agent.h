@@ -5,6 +5,14 @@
 #include "graphics.h"
 #include "tinyRandomMap.h"
 
+enum Direction {
+  east,
+  north,
+  west,
+  south,
+  none
+};
+
 class Agent {
 public:
   Agent(unsigned int, tinyRandomMap *);
@@ -15,7 +23,7 @@ public:
   void move(char);
   void found_wumpus();
   unsigned char get_bits(unsigned int, unsigned int);
-  unsigned char get_internal_bits(unsigned int, unsigned int);
+  unsigned char get_internal_bits(unsigned int, unsigned int, unsigned int*);
   void DFS_move(unsigned int, unsigned int);
   void traverse_matrix();
   void return_home();
@@ -27,6 +35,7 @@ private:
     enum State {present, clear, unknown};
     State wumpus;
     State pit;
+    Direction dir;
     Node * parent;
     Color color;
     unsigned int node_x_position;
@@ -34,8 +43,8 @@ private:
   };
   void matrix_DFS_visit(Node *);
   std::vector< std::vector< Node * > > internal_map;
-  unsigned int agent_x_position;
-  unsigned int agent_y_position;
+  unsigned int agent_x_position, agent_x_prev;
+  unsigned int agent_y_position, agent_y_prev;
   unsigned int m_dimension;
   tinyRandomMap * m_map;
   Graphics graphics;

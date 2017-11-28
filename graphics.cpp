@@ -39,7 +39,7 @@ Graphics::~Graphics() {
 }
 
 void Graphics::Render(Agent *p_agent, int p_man_x, int p_man_y) {
-  unsigned int row, col, x_offset, y_offset;
+  unsigned int row, col, dir, x_offset, y_offset;
   unsigned char tile;
   SDL_Rect src, dst;
 
@@ -58,19 +58,19 @@ void Graphics::Render(Agent *p_agent, int p_man_x, int p_man_y) {
 
   for (int i = 0; i < row; i++) {
     for (int j = 0; j < col; j++) {
-      tile = p_agent->get_internal_bits(i, j);
+      tile = p_agent->get_internal_bits(i, j, &dir);
 
-      RenderTile(tile, j*DESTINATION_TILE_WIDTH+x_offset, i*DESTINATION_TILE_HEIGHT+y_offset);
+      RenderTile(tile, dir, j*DESTINATION_TILE_WIDTH+x_offset, i*DESTINATION_TILE_HEIGHT+y_offset);
     }
   }
 
-  RenderTile(0x20, p_man_y*DESTINATION_TILE_WIDTH+x_offset, p_man_x*DESTINATION_TILE_HEIGHT+y_offset);
+  RenderTile(0x20, none, p_man_y*DESTINATION_TILE_WIDTH+x_offset, p_man_x*DESTINATION_TILE_HEIGHT+y_offset);
 
   SDL_RenderPresent(renderer);
   SDL_Delay(500);
 }
 
-void Graphics::RenderTile(unsigned char p_tile, int p_x, int p_y) {
+void Graphics::RenderTile(unsigned char p_tile, unsigned int p_dir, int p_x, int p_y) {
   SDL_Rect src, dst;
 
   src.w = SOURCE_TILE_WIDTH;
@@ -122,6 +122,24 @@ void Graphics::RenderTile(unsigned char p_tile, int p_x, int p_y) {
         SDL_RenderCopy(renderer, sprites, &src, &dst);
       }
     }
+  }
+
+/*
+int SDL_RenderCopyEx(SDL_Renderer*          renderer,
+                     SDL_Texture*           texture,
+                     const SDL_Rect*        srcrect,
+                     const SDL_Rect*        dstrect,
+                     const double           angle,
+                     const SDL_Point*       center,
+                     const SDL_RendererFlip flip)
+*/
+
+  src.x = 2*SOURCE_TILE_WIDTH;
+  src.y = 1*SOURCE_TILE_HEIGHT;
+
+  switch (p_dir) {
+    default:
+      SDL_RenderCopyEx(renderer, sprites, &src, &dst, 0.0, NULL, SDL_FLIP_NONE);
   }
 }
 

@@ -68,7 +68,7 @@ unsigned char Agent::get_bits(unsigned int x, unsigned int y) {
 *                                          3rd bit - wumpus
 *                                          4th bit - gold 
 */
-unsigned char Agent::get_internal_bits(unsigned int x, unsigned int y) {
+unsigned char Agent::get_internal_bits(unsigned int x, unsigned int y, unsigned int *dir) {
   unsigned char bits = 0;
 
   if((internal_map[x][y]->pit == Node::present) || (internal_map[x][y]->pit == Node::unknown)) {
@@ -80,6 +80,8 @@ unsigned char Agent::get_internal_bits(unsigned int x, unsigned int y) {
   
   bits |= (m_map->get(x,y) & 0x5);
   bits |= (m_map->hasGold(x, y)) ? 0x10 : 0x0;
+
+  *dir = internal_map[x][y]->dir;
 
   return bits;
 }
@@ -195,6 +197,7 @@ Agent::Node::Node(unsigned int i, unsigned int j) {
   node_y_position = j;
   wumpus = unknown;
   pit = unknown;
+  dir = none;
   parent = NULL;
   color = white;
 }
@@ -216,12 +219,23 @@ void Agent::return_home() {
 **/
 void Agent::update_current(unsigned int cur_x, unsigned int cur_y) {
   //Get the bits(status) of the current node
+  int xdiff = agent_x_position-agent_x_prev,
+      ydiff = agent_y_position-agent_y_prev;
   unsigned char bits = get_bits(cur_x, cur_y);
   bool breeze, stench, wumpus, pit;
   //Check if current node has the gold
   if(bits & 0x16) {
     agent_has_gold = true;
     //return_home();
+  }
+  if (xdiff < 0) {
+    internal_map[cur_x][cur_y]->dir = west;
+  } else if (xdiff) {
+    internal_map[cur_x][cur_y]->dir = east;
+  } else if (ydiff < 0) {
+    internal_map[cur_x][cur_y]->dir = north;
+  } else if (ydiff) {
+    internal_map[cur_x][cur_y]->dir = south;
   }
   //This section updates the current status of the node we are in
   if(bits & 0x1) {
@@ -475,6 +489,8 @@ void Agent::matrix_DFS_visit(Node * u) {
 * @param y The horizontal position in our matrix we are moving to.
 */
 void Agent::DFS_move(unsigned int x, unsigned int y) {
+  agent_x_prev = agent_x_position;
+  agent_y_prev = agent_y_position;
   agent_x_position = x;
   agent_y_position = y;
   update_current(agent_x_position, agent_y_position);

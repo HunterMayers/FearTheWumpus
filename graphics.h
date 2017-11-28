@@ -22,7 +22,7 @@ class Graphics {
     Graphics();
     ~Graphics();
     void Render(Agent *p_agent, int p_man_x, int p_man_y);
-    void RenderTile(unsigned char p_tile, int p_x, int p_y);
+    void RenderTile(unsigned char p_tile, unsigned int p_dir, int p_x, int p_y);
     SDL_Rect SetSource(unsigned char p_tile);
 
   private:
