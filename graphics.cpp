@@ -149,7 +149,7 @@ void Graphics::RenderTile(unsigned char p_tile, unsigned int p_dir, int p_x, int
   }
 }
 
-void Graphics::HandleInput(void) {
+int Graphics::HandleInput(void) {
 	while (SDL_PollEvent(&event)) {
 		switch (event.type) {
 			case SDL_QUIT:
@@ -173,6 +173,8 @@ void Graphics::HandleInput(void) {
             } else {
               delay = 50;
             }
+          } else if (event.key.keysym.scancode == SDL_SCANCODE_R) {
+            return 0;
           }
 				}
 				break;
@@ -180,6 +182,8 @@ void Graphics::HandleInput(void) {
 				break;
 		}
 	}
+
+  return 1;
 }
 
 SDL_Rect Graphics::SetSource(unsigned char p_tile) {
