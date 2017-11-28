@@ -471,9 +471,7 @@ void Agent::traverse_matrix() {
     // display not found
   }
 
-  while (1) {
-    graphics.HandleInput();
-  }
+  while (graphics.HandleInput());
 }
 
 /*
