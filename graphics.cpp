@@ -1,6 +1,10 @@
 #include "graphics.h"
 #include "agent.h"
 
+/*
+ * Initializes the window and renderer to draw graphics. If these are both correctly
+ * initialized, this function loads in 'images.png'.
+ */
 Graphics::Graphics() {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) == 0) {
 
@@ -38,7 +42,12 @@ Graphics::~Graphics() {
   SDL_DestroyWindow(window);
 }
 
-void Graphics::Render(Agent *p_agent, int p_man_x, int p_man_y) {
+/*
+ * Renders the map of the algorithm to the window.
+ * @param p_agent - a pointer to the agent whose knowledge we want to draw to the screen.
+ * @param p_man_x - the 
+ */
+void Graphics::Render(Agent *p_agent) {
   unsigned int row, col, dir, x_offset, y_offset;
   unsigned char tile;
   SDL_Rect src, dst;
@@ -63,8 +72,6 @@ void Graphics::Render(Agent *p_agent, int p_man_x, int p_man_y) {
       RenderTile(tile, dir, j*DESTINATION_TILE_WIDTH+x_offset, i*DESTINATION_TILE_HEIGHT+y_offset);
     }
   }
-
-  RenderTile(0x20, none, p_man_y*DESTINATION_TILE_WIDTH+x_offset, p_man_x*DESTINATION_TILE_HEIGHT+y_offset);
 
   SDL_RenderPresent(renderer);
   HandleInput();
