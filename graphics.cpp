@@ -67,7 +67,8 @@ void Graphics::Render(Agent *p_agent, int p_man_x, int p_man_y) {
   RenderTile(0x20, none, p_man_y*DESTINATION_TILE_WIDTH+x_offset, p_man_x*DESTINATION_TILE_HEIGHT+y_offset);
 
   SDL_RenderPresent(renderer);
-  SDL_Delay(500);
+  HandleInput();
+  SDL_Delay(50);
 }
 
 void Graphics::RenderTile(unsigned char p_tile, unsigned int p_dir, int p_x, int p_y) {
@@ -82,65 +83,82 @@ void Graphics::RenderTile(unsigned char p_tile, unsigned int p_dir, int p_x, int
   dst.x = p_x;
   dst.y = p_y;
 
-  if ((p_tile & 0xA) == 0xA) { /* if unknown */
+  if ((p_tile & 0x80) == 0x80) { /* if unknown */
     SDL_RenderFillRect(renderer, &dst);
-  } else { /* if known */
+  } 
+  else { /* if known */
     src.x = 3*SOURCE_TILE_WIDTH;
     src.y = 1*SOURCE_TILE_WIDTH;
     SDL_RenderCopy(renderer, sprites, &src, &dst);
 
+    if ((p_tile & 0x10) == 0x10) { /* if gold */
+      src.x = 1*SOURCE_TILE_WIDTH;
+      src.y = 1*SOURCE_TILE_HEIGHT;
+      SDL_RenderCopy(renderer, sprites, &src, &dst);
+    }
+
+    if((p_tile & 0x20) == 0x20) { /*if man */
+      src.x = 0;
+      src.y = 1*SOURCE_TILE_WIDTH;
+      SDL_RenderCopy(renderer, sprites, &src, &dst);
+    }
     if ((p_tile & 0x8) == 0x8) { /* if wumpus */
       src.x = 1*SOURCE_TILE_WIDTH;
       src.y = 0;
       SDL_RenderCopy(renderer, sprites, &src, &dst);
-    } else if ((p_tile & 0x2) == 0x2) { /* if pit */
+    }
+    if ((p_tile & 0x2) == 0x2) { /* if pit */
       src.x = 3*SOURCE_TILE_WIDTH;
       src.y = 0;
       SDL_RenderCopy(renderer, sprites, &src, &dst);
-    } else {
-      if ((p_tile & 0x20) == 0x20) { /* if man */
-        src.x = 0;
-        src.y = 1*SOURCE_TILE_HEIGHT;
-        SDL_RenderCopy(renderer, sprites, &src, &dst);
-      }
-
-      if ((p_tile & 0x10) == 0x10) { /* if gold */
-        src.x = 1*SOURCE_TILE_WIDTH;
-        src.y = 1*SOURCE_TILE_HEIGHT;
-        SDL_RenderCopy(renderer, sprites, &src, &dst);
-      }
-
-      if ((p_tile & 0x4) == 0x4) { /* if stench */
-        src.x = 0;
-        src.y = 0;
-        SDL_RenderCopy(renderer, sprites, &src, &dst);
-      }
-
-      if ((p_tile & 0x1) == 0x1) { /* if draft */
-        src.x = 2*SOURCE_TILE_WIDTH;
-        src.y = 0;
-        SDL_RenderCopy(renderer, sprites, &src, &dst);
-      }
+    }
+    if ((p_tile & 0x4) == 0x4) { /* if stench */
+      src.x = 0;
+      src.y = 0;
+      SDL_RenderCopy(renderer, sprites, &src, &dst);
+    }
+    if ((p_tile & 0x1) == 0x1) { /* if draft */
+      src.x = 2*SOURCE_TILE_WIDTH;
+      src.y = 0;
+      SDL_RenderCopy(renderer, sprites, &src, &dst);
     }
   }
-
-/*
-int SDL_RenderCopyEx(SDL_Renderer*          renderer,
-                     SDL_Texture*           texture,
-                     const SDL_Rect*        srcrect,
-                     const SDL_Rect*        dstrect,
-                     const double           angle,
-                     const SDL_Point*       center,
-                     const SDL_RendererFlip flip)
-*/
 
   src.x = 2*SOURCE_TILE_WIDTH;
   src.y = 1*SOURCE_TILE_HEIGHT;
 
+  dst.w /= 4;
+  dst.h /= 4;
+
+  dst.y += dst.h*3;
+
   switch (p_dir) {
+    case none:
+      break;
     default:
-      SDL_RenderCopyEx(renderer, sprites, &src, &dst, 0.0, NULL, SDL_FLIP_NONE);
+      SDL_RenderCopyEx(renderer, sprites, &src, &dst, 90.0*p_dir, NULL, SDL_FLIP_NONE);
   }
+}
+
+void Graphics::HandleInput(void) {
+	while (SDL_PollEvent(&event)) {
+		switch (event.type) {
+			case SDL_QUIT:
+        {
+          exit(0);
+        }
+        break;
+			case SDL_KEYDOWN:
+				{
+					if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+            exit(0);
+					}
+				}
+				break;
+			default:
+				break;
+		}
+	}
 }
 
 SDL_Rect Graphics::SetSource(unsigned char p_tile) {

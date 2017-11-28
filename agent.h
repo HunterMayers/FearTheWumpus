@@ -3,7 +3,8 @@
 
 #include <vector>
 #include "graphics.h"
-#include "tinyRandomMap.h"
+//#include "tinyRandomMap.h"
+#include "largeRandomMap.h"
 
 enum Direction {
   east,
@@ -15,7 +16,7 @@ enum Direction {
 
 class Agent {
 public:
-  Agent(unsigned int, tinyRandomMap *);
+  Agent(unsigned int, largeRandomMap *);
   ~Agent();
   bool is_safe(unsigned int, unsigned int);
   void print_nodes();
@@ -26,7 +27,6 @@ public:
   unsigned char get_internal_bits(unsigned int, unsigned int, unsigned int*);
   void DFS_move(unsigned int, unsigned int);
   void traverse_matrix();
-  void return_home();
 private:
   class Node {
   public:
@@ -36,6 +36,9 @@ private:
     State wumpus;
     State pit;
     Direction dir;
+    bool breeze;
+    bool stench;
+    bool visited;
     Node * parent;
     Color color;
     unsigned int node_x_position;
@@ -46,7 +49,7 @@ private:
   unsigned int agent_x_position, agent_x_prev;
   unsigned int agent_y_position, agent_y_prev;
   unsigned int m_dimension;
-  tinyRandomMap * m_map;
+  largeRandomMap * m_map;
   Graphics graphics;
   bool agent_has_gold;
 protected:
