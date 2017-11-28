@@ -1,7 +1,13 @@
 #include "graphics.h"
 #include "agent.h"
 
+/*
+ * Initializes the window and renderer to draw graphics. If these are both correctly
+ * initialized, this function loads in 'images.png'.
+ */
 Graphics::Graphics() {
+  delay = 251;
+
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) == 0) {
 
 		window = SDL_CreateWindow("Fear The Wumpus", 0, 0, 320, 240, SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -38,8 +44,13 @@ Graphics::~Graphics() {
   SDL_DestroyWindow(window);
 }
 
-void Graphics::Render(Agent *p_agent, int p_man_x, int p_man_y) {
-  unsigned int row, col, x_offset, y_offset;
+/*
+ * Renders the map of the algorithm to the window.
+ * @param p_agent - a pointer to the agent whose knowledge we want to draw to the screen.
+ * @param p_man_x - the 
+ */
+void Graphics::Render(Agent *p_agent) {
+  unsigned int row, col, dir, x_offset, y_offset;
   unsigned char tile;
   SDL_Rect src, dst;
 
@@ -58,19 +69,18 @@ void Graphics::Render(Agent *p_agent, int p_man_x, int p_man_y) {
 
   for (int i = 0; i < row; i++) {
     for (int j = 0; j < col; j++) {
-      tile = p_agent->get_internal_bits(i, j);
+      tile = p_agent->get_internal_bits(i, j, &dir);
 
-      RenderTile(tile, j*DESTINATION_TILE_WIDTH+x_offset, i*DESTINATION_TILE_HEIGHT+y_offset);
+      RenderTile(tile, dir, j*DESTINATION_TILE_WIDTH+x_offset, i*DESTINATION_TILE_HEIGHT+y_offset);
     }
   }
 
-  RenderTile(0x20, p_man_y*DESTINATION_TILE_WIDTH+x_offset, p_man_x*DESTINATION_TILE_HEIGHT+y_offset);
-
   SDL_RenderPresent(renderer);
-  SDL_Delay(500);
+  HandleInput();
+  SDL_Delay(delay);
 }
 
-void Graphics::RenderTile(unsigned char p_tile, int p_x, int p_y) {
+void Graphics::RenderTile(unsigned char p_tile, unsigned int p_dir, int p_x, int p_y) {
   SDL_Rect src, dst;
 
   src.w = SOURCE_TILE_WIDTH;
@@ -82,47 +92,94 @@ void Graphics::RenderTile(unsigned char p_tile, int p_x, int p_y) {
   dst.x = p_x;
   dst.y = p_y;
 
-  if ((p_tile & 0xA) == 0xA) { /* if unknown */
+  if ((p_tile & 0x80) == 0x80) { /* if unknown */
     SDL_RenderFillRect(renderer, &dst);
-  } else { /* if known */
+  } 
+  else { /* if known */
     src.x = 3*SOURCE_TILE_WIDTH;
     src.y = 1*SOURCE_TILE_WIDTH;
     SDL_RenderCopy(renderer, sprites, &src, &dst);
 
+    if ((p_tile & 0x10) == 0x10) { /* if gold */
+      src.x = 1*SOURCE_TILE_WIDTH;
+      src.y = 1*SOURCE_TILE_HEIGHT;
+      SDL_RenderCopy(renderer, sprites, &src, &dst);
+    }
+
+    if((p_tile & 0x20) == 0x20) { /*if man */
+      src.x = 0;
+      src.y = 1*SOURCE_TILE_WIDTH;
+      SDL_RenderCopy(renderer, sprites, &src, &dst);
+    }
     if ((p_tile & 0x8) == 0x8) { /* if wumpus */
       src.x = 1*SOURCE_TILE_WIDTH;
       src.y = 0;
       SDL_RenderCopy(renderer, sprites, &src, &dst);
-    } else if ((p_tile & 0x2) == 0x2) { /* if pit */
+    }
+    if ((p_tile & 0x2) == 0x2) { /* if pit */
       src.x = 3*SOURCE_TILE_WIDTH;
       src.y = 0;
       SDL_RenderCopy(renderer, sprites, &src, &dst);
-    } else {
-      if ((p_tile & 0x20) == 0x20) { /* if man */
-        src.x = 0;
-        src.y = 1*SOURCE_TILE_HEIGHT;
-        SDL_RenderCopy(renderer, sprites, &src, &dst);
-      }
-
-      if ((p_tile & 0x10) == 0x10) { /* if gold */
-        src.x = 1*SOURCE_TILE_WIDTH;
-        src.y = 1*SOURCE_TILE_HEIGHT;
-        SDL_RenderCopy(renderer, sprites, &src, &dst);
-      }
-
-      if ((p_tile & 0x4) == 0x4) { /* if stench */
-        src.x = 0;
-        src.y = 0;
-        SDL_RenderCopy(renderer, sprites, &src, &dst);
-      }
-
-      if ((p_tile & 0x1) == 0x1) { /* if draft */
-        src.x = 2*SOURCE_TILE_WIDTH;
-        src.y = 0;
-        SDL_RenderCopy(renderer, sprites, &src, &dst);
-      }
+    }
+    if ((p_tile & 0x4) == 0x4) { /* if stench */
+      src.x = 0;
+      src.y = 0;
+      SDL_RenderCopy(renderer, sprites, &src, &dst);
+    }
+    if ((p_tile & 0x1) == 0x1) { /* if draft */
+      src.x = 2*SOURCE_TILE_WIDTH;
+      src.y = 0;
+      SDL_RenderCopy(renderer, sprites, &src, &dst);
     }
   }
+
+  src.x = 2*SOURCE_TILE_WIDTH;
+  src.y = 1*SOURCE_TILE_HEIGHT;
+
+  dst.w /= 4;
+  dst.h /= 4;
+
+  dst.y += dst.h*3;
+
+  switch (p_dir) {
+    case none:
+      break;
+    default:
+      SDL_RenderCopyEx(renderer, sprites, &src, &dst, 90.0*p_dir, NULL, SDL_FLIP_NONE);
+  }
+}
+
+void Graphics::HandleInput(void) {
+	while (SDL_PollEvent(&event)) {
+		switch (event.type) {
+			case SDL_QUIT:
+        {
+          exit(0);
+        }
+        break;
+			case SDL_KEYDOWN:
+				{
+					if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+            exit(0);
+					} else if (event.key.keysym.scancode == SDL_SCANCODE_UP) {
+            if (delay < 1000) {
+              delay += 50;
+            } else {
+              delay = 1000;
+            }
+          } else if (event.key.keysym.scancode == SDL_SCANCODE_DOWN) {
+            if (delay > 50) {
+              delay -= 50;
+            } else {
+              delay = 50;
+            }
+          }
+				}
+				break;
+			default:
+				break;
+		}
+	}
 }
 
 SDL_Rect Graphics::SetSource(unsigned char p_tile) {

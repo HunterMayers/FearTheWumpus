@@ -12,8 +12,8 @@
 #define SOURCE_TILE_WIDTH 128
 #define SOURCE_TILE_HEIGHT 128
 
-#define DESTINATION_TILE_WIDTH 32
-#define DESTINATION_TILE_HEIGHT 32
+#define DESTINATION_TILE_WIDTH 48
+#define DESTINATION_TILE_HEIGHT 48
 
 class Agent;
 
@@ -21,12 +21,15 @@ class Graphics {
   public:
     Graphics();
     ~Graphics();
-    void Render(Agent *p_agent, int p_man_x, int p_man_y);
-    void RenderTile(unsigned char p_tile, int p_x, int p_y);
+    void Render(Agent *p_agent);
+    void RenderTile(unsigned char p_tile, unsigned int p_dir, int p_x, int p_y);
+    void HandleInput(void);
     SDL_Rect SetSource(unsigned char p_tile);
 
   private:
     int screen_width, screen_height;
+    unsigned long delay;
+    SDL_Event event;
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Texture *sprites;
