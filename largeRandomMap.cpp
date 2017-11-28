@@ -16,6 +16,7 @@ largeRandomMap::largeRandomMap(unsigned int N, unsigned int numPits) {
   }
   unsigned int roll_x;
   unsigned int roll_y;
+  unsigned long seed_val = time(NULL);
   bool valid;
   int count;
   vector< pair< unsigned int, unsigned int > > taken;
@@ -25,7 +26,7 @@ largeRandomMap::largeRandomMap(unsigned int N, unsigned int numPits) {
   taken.push_back(make_pair(N - 1, 1));
 
   //seed rand()
-  srand(time(NULL));
+  srand(seed_val);
 
   //place the gold
   count = 1;
@@ -83,6 +84,8 @@ largeRandomMap::largeRandomMap(unsigned int N, unsigned int numPits) {
       place_pit(roll_x, roll_y);
     }
   }
+
+  printf("Seed: %lu.\n", seed_val);
 }
 
 void largeRandomMap::place_gold(unsigned int x, unsigned int y) {

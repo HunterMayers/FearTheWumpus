@@ -28,6 +28,7 @@ class Graphics {
 
   private:
     int screen_width, screen_height;
+    unsigned long delay;
     SDL_Event event;
     SDL_Window *window;
     SDL_Renderer *renderer;

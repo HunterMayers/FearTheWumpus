@@ -6,6 +6,8 @@
  * initialized, this function loads in 'images.png'.
  */
 Graphics::Graphics() {
+  delay = 251;
+
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) == 0) {
 
 		window = SDL_CreateWindow("Fear The Wumpus", 0, 0, 320, 240, SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -75,7 +77,7 @@ void Graphics::Render(Agent *p_agent) {
 
   SDL_RenderPresent(renderer);
   HandleInput();
-  SDL_Delay(250);
+  SDL_Delay(delay);
 }
 
 void Graphics::RenderTile(unsigned char p_tile, unsigned int p_dir, int p_x, int p_y) {
@@ -159,7 +161,19 @@ void Graphics::HandleInput(void) {
 				{
 					if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
             exit(0);
-					}
+					} else if (event.key.keysym.scancode == SDL_SCANCODE_UP) {
+            if (delay < 1000) {
+              delay += 50;
+            } else {
+              delay = 1000;
+            }
+          } else if (event.key.keysym.scancode == SDL_SCANCODE_DOWN) {
+            if (delay > 50) {
+              delay -= 50;
+            } else {
+              delay = 50;
+            }
+          }
 				}
 				break;
 			default:
