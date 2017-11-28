@@ -3,6 +3,9 @@
 #include "agent.h"
 #include <unistd.h>
 
+#define AGENT_DELAY 150000
+#define GRAPHICS_DELAY 2
+
 using namespace std;
 
 
@@ -98,7 +101,7 @@ unsigned char Agent::get_internal_bits(unsigned int x, unsigned int y, unsigned 
 
   }
 
-  *dir = internal_map[x][y]->dir;
+  *dir = internal_map[x][y]->color == Node::black ? none : internal_map[x][y]->dir;
 
   return bits;
 }
@@ -201,7 +204,7 @@ void Agent::print_nodes() {
     }
     cout << '\n';
   }
-  usleep(250000);
+  usleep(AGENT_DELAY);
 }
 
 /*
@@ -459,7 +462,7 @@ void Agent::found_wumpus() {
 * Causes our agent to traverse the matrix and look for the gold.
 */
 void Agent::traverse_matrix() {
-  sleep(2);
+  sleep(GRAPHICS_DELAY);
   matrix_DFS_visit(internal_map[agent_x_position][agent_y_position]);
 }
 
