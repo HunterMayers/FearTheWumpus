@@ -3,7 +3,7 @@
 #include "agent.h"
 #include <unistd.h>
 
-#define AGENT_DELAY 250000
+#define AGENT_DELAY 150000
 #define GRAPHICS_DELAY 2
 
 using namespace std;
@@ -101,7 +101,7 @@ unsigned char Agent::get_internal_bits(unsigned int x, unsigned int y, unsigned 
 
   }
 
-  *dir = internal_map[x][y]->dir;
+  *dir = internal_map[x][y]->color == Node::black ? none : internal_map[x][y]->dir;
 
   return bits;
 }
