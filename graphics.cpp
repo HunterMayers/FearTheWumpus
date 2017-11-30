@@ -152,7 +152,6 @@ void Graphics::RenderTile(unsigned char p_tile, unsigned int p_dir, int p_x, int
 
 int Graphics::HandleInput(void) {
 	while (SDL_PollEvent(&event)) {
-    RenderWin();
 		switch (event.type) {
 			case SDL_QUIT:
         {
