@@ -38,7 +38,9 @@ class Graphics {
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Texture *sprites;
-    SDL_Texture* Message;
+    SDL_Texture *WinMessage;
+    SDL_Texture *LoseMessage;
+    SDL_Texture *InstructionMessage;
     SDL_Rect Message_rect;
 };
 
