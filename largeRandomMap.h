@@ -6,7 +6,7 @@
 
 class largeRandomMap {
 public:
-  largeRandomMap(unsigned int, unsigned int);
+  largeRandomMap(unsigned int, unsigned int, unsigned long);
   unsigned char get(unsigned int, unsigned int);
   void place_gold(unsigned int, unsigned int);
   void place_wumpus(unsigned int, unsigned int);

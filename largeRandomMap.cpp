@@ -8,7 +8,7 @@
 
 using namespace std;
 
-largeRandomMap::largeRandomMap(unsigned int N, unsigned int numPits) {
+largeRandomMap::largeRandomMap(unsigned int N, unsigned int numPits, unsigned long seed_val) {
   dimension = N;
   map.resize(N); 
   for(unsigned int i = 0; i < map.size(); ++i) {
@@ -16,7 +16,7 @@ largeRandomMap::largeRandomMap(unsigned int N, unsigned int numPits) {
   }
   unsigned int roll_x;
   unsigned int roll_y;
-  unsigned long seed_val = time(NULL);
+  //unsigned long seed_val = time(NULL);
   bool valid;
   int count;
   vector< pair< unsigned int, unsigned int > > taken;
@@ -26,7 +26,7 @@ largeRandomMap::largeRandomMap(unsigned int N, unsigned int numPits) {
   taken.push_back(make_pair(N - 1, 1));
 
   //seed rand()
-  srand(seed_val);
+  //srand(seed_val);
 
   //place the gold
   count = 1;
@@ -85,7 +85,7 @@ largeRandomMap::largeRandomMap(unsigned int N, unsigned int numPits) {
     }
   }
 
-  printf("Seed: %lu.\n", seed_val);
+  //printf("Seed: %lu.\n", seed_val);
 }
 
 void largeRandomMap::place_gold(unsigned int x, unsigned int y) {

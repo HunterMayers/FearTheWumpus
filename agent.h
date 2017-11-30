@@ -2,7 +2,7 @@
 #define AGENT_H
 
 #include <vector>
-#include "graphics.h"
+//#include "graphics.h"
 //#include "tinyRandomMap.h"
 #include "largeRandomMap.h"
 
@@ -18,6 +18,7 @@ class Agent {
 public:
   Agent(unsigned int, largeRandomMap *);
   ~Agent();
+  bool get_has_gold();
   bool is_safe(unsigned int, unsigned int);
   void print_nodes();
   void update_current(unsigned int, unsigned int);
@@ -50,7 +51,7 @@ private:
   unsigned int agent_y_position, agent_y_prev;
   unsigned int m_dimension;
   largeRandomMap * m_map;
-  Graphics graphics;
+  //Graphics graphics;
   bool agent_has_gold;
 protected:
 };

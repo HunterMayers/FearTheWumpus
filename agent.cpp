@@ -3,11 +3,19 @@
 #include "agent.h"
 #include <unistd.h>
 
-#define AGENT_DELAY 150000
-#define GRAPHICS_DELAY 2
+#define AGENT_DELAY 1500
+#define GRAPHICS_DELAY 0
 
 using namespace std;
 
+
+/*
+* Checks if the agent has gold at the end for
+* gathering metrics.
+*/
+bool Agent::get_has_gold() {
+  return agent_has_gold;
+}
 
 /*
 * Checks if cell is safe to move to
@@ -440,7 +448,7 @@ void Agent::update_current(unsigned int cur_x, unsigned int cur_y) {
       }
     }
   }
-  graphics.Render(this);
+  //graphics.Render(this);
 }
 
 /*
@@ -471,7 +479,7 @@ void Agent::traverse_matrix() {
     // display not found
   }
 
-  while (graphics.HandleInput());
+  //while (graphics.HandleInput());
 }
 
 /*
