@@ -34,7 +34,7 @@ bool Agent::is_safe(unsigned int x, unsigned int y) {
 *                                          1st bit - pit
 *                                          2nd bit - stench
 *                                          3rd bit - wumpus
-*                                          4th bit - gold 
+*                                          4th bit - gold
 */
 unsigned char Agent::get_bits(unsigned int x, unsigned int y) {
   unsigned char a = m_map->get(x,y);
@@ -69,7 +69,7 @@ unsigned char Agent::get_bits(unsigned int x, unsigned int y) {
 *                                          1st bit - pit
 *                                          2nd bit - stench
 *                                          3rd bit - wumpus
-*                                          4th bit - gold 
+*                                          4th bit - gold
 */
 unsigned char Agent::get_internal_bits(unsigned int x, unsigned int y, unsigned int *dir) {
   unsigned char bits = 0;
@@ -80,7 +80,7 @@ unsigned char Agent::get_internal_bits(unsigned int x, unsigned int y, unsigned 
   if(internal_map[x][y]->wumpus == Node::present) {
     bits |= 0x8;
   }
-  
+
   //bits |= (m_map->get(x,y) & 0x5);
   if(internal_map[x][y]->breeze) {
     bits |= 0x1;
@@ -91,7 +91,7 @@ unsigned char Agent::get_internal_bits(unsigned int x, unsigned int y, unsigned 
   if(internal_map[x][y]->visited) {
     bits |= 0x40;
   }
-  
+
   bits |= (agent_has_gold && (x == agent_x_position && y == agent_y_position)) ? 0x10 : 0x0;
   //bits |= (m_map->hasGold(x,y) && !agent_has_gold) ? 0x10: 0x0;
   bits |= (x == agent_x_position && y == agent_y_position) ? 0x20 : 0x0;
@@ -143,6 +143,7 @@ Agent::Agent(unsigned int dimension, largeRandomMap *m) {
   m_map = m;
   m_dimension = dimension;
   internal_map.resize(dimension);
+  graphics.TextInit();
   for(unsigned int i = 0; i < dimension; ++i) {
     internal_map[i].resize(dimension);
     for(unsigned int j = 0; j < dimension; ++j) {
@@ -464,10 +465,12 @@ void Agent::found_wumpus() {
 void Agent::traverse_matrix() {
   sleep(GRAPHICS_DELAY);
   matrix_DFS_visit(internal_map[agent_x_position][agent_y_position]);
-  
+
   if (agent_has_gold) {
+    graphics.RenderWin();
     // display found
   } else {
+    graphics.RenderWin();
     // display not found
   }
 
@@ -522,3 +525,4 @@ void Agent::DFS_move(unsigned int x, unsigned int y) {
   agent_y_position = y;
   update_current(agent_x_position, agent_y_position);
 }
+

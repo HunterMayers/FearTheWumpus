@@ -4,9 +4,11 @@
 #ifdef __linux__
 	#include <SDL2/SDL.h>
 	#include <SDL2/SDL_image.h>
+  #include <SDL2/SDL_ttf.h>
 #elif __APPLE__
 	#include <SDL2/SDL.h>
 	#include <SDL2_image/SDL_image.h>
+  #include <SDL2_ttf/SDL_ttf.h>
 #endif
 
 #define SOURCE_TILE_WIDTH 128
@@ -25,6 +27,9 @@ class Graphics {
     void RenderTile(unsigned char p_tile, unsigned int p_dir, int p_x, int p_y);
     int HandleInput(void);
     SDL_Rect SetSource(unsigned char p_tile);
+    void RenderWin();
+    void RenderLose();
+    void TextInit();
 
   private:
     int screen_width, screen_height;
@@ -33,6 +38,8 @@ class Graphics {
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Texture *sprites;
+    SDL_Texture* Message;
+    SDL_Rect Message_rect;
 };
 
 #endif /* __GRAPHICS__ */
