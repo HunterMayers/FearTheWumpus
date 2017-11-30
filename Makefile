@@ -1,8 +1,8 @@
 CC = g++
 CFLAGS = -g -Wall -pedantic -std=c++14 -O3
 
-OSX = -I /Library/Frameworks/ -framework SDL2 -framework SDL2_image
-LINUX = -lSDL2 -lSDL2_image
+OSX = -I /Library/Frameworks/ -framework SDL2 -framework SDL2_image -framework SDL2_ttf
+LINUX = -lSDL2 -lSDL2_image -lSDL2_ttf
 
 OBJECTS = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 HEADERS = $(wildcard *.h)
