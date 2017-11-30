@@ -440,7 +440,7 @@ void Agent::update_current(unsigned int cur_x, unsigned int cur_y) {
       }
     }
   }
-  graphics.Render(this);
+  graphics.Render(this, m_map->get_dimension());
 }
 
 /*

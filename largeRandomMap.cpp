@@ -88,6 +88,10 @@ largeRandomMap::largeRandomMap(unsigned int N, unsigned int numPits) {
   printf("Seed: %lu.\n", seed_val);
 }
 
+unsigned int largeRandomMap::get_dimension(void) {
+  return dimension;
+}
+
 void largeRandomMap::place_gold(unsigned int x, unsigned int y) {
   map[x][y] |= 0x10;
 }

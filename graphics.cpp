@@ -49,7 +49,7 @@ Graphics::~Graphics() {
  * @param p_agent - a pointer to the agent whose knowledge we want to draw to the screen.
  * @param p_man_x - the 
  */
-void Graphics::Render(Agent *p_agent) {
+void Graphics::Render(Agent *p_agent, int n) {
   unsigned int row, col, dir, x_offset, y_offset;
   unsigned char tile;
   SDL_Rect src, dst;
@@ -61,8 +61,8 @@ void Graphics::Render(Agent *p_agent) {
   dst.w = DESTINATION_TILE_WIDTH;
   dst.h = DESTINATION_TILE_HEIGHT;
 
-  row = 16;
-  col = 16;
+  row = n;
+  col = n;
 
   x_offset = (screen_width-DESTINATION_TILE_WIDTH*col)/2;
   y_offset = (screen_height-DESTINATION_TILE_HEIGHT*row)/2;
