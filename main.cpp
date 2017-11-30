@@ -13,10 +13,11 @@ int main(int argc, char **argv) {
   srand(seed);
 
   //tinyRandomMap map(n, n, 0x0420FEFD, 96);
+  const unsigned int NUM_RUNS = 10000;
   for(unsigned int i = 0; i < 40; ++i) {
     int wins = 0;
     unsigned int j = 0;
-    for(j = 0; j < 1000; ++j) {
+    for(j = 0; j < NUM_RUNS; ++j) {
       largeRandomMap *map = new largeRandomMap(n, i, seed);
       Agent *agent = new Agent(n, map);
       agent->traverse_matrix();
@@ -27,7 +28,7 @@ int main(int argc, char **argv) {
       delete map;
     }
     double percent = ((double)wins / (double)j) * 100;
-    std::cout << "Percentage of successful runs for " << i << " pits: " << percent << "%\n";
+    std::cout << "Percentage of successful runs [" << NUM_RUNS << " iterations] [" << i << " pits] " << "[16x16 world]: " << percent << "%\n";
   }
   /*
   while (1) {
