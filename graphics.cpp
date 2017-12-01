@@ -50,7 +50,7 @@ Graphics::~Graphics() {
  * @param p_agent - a pointer to the agent whose knowledge we want to draw to the screen.
  * @param p_man_x - the 
  */
-void Graphics::Render(Agent *p_agent, int n) {
+void Graphics::Render(Agent *p_agent, int n, bool present) {
   unsigned int row, col, dir, x_offset, y_offset;
   unsigned char tile;
   SDL_Rect src, dst;
@@ -76,7 +76,10 @@ void Graphics::Render(Agent *p_agent, int n) {
     }
   }
 
-  SDL_RenderPresent(renderer);
+  if (present) {
+    SDL_RenderPresent(renderer);
+  }
+
   HandleInput();
   SDL_Delay(delay);
 }

@@ -466,6 +466,8 @@ void Agent::traverse_matrix() {
   sleep(GRAPHICS_DELAY);
   matrix_DFS_visit(internal_map[agent_x_position][agent_y_position]);
 
+  graphics.Render(this, m_map->get_dimension(), false);
+
   if (agent_has_gold) {
     // gold found
     graphics.RenderWin();
