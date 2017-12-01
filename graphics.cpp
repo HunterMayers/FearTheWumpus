@@ -211,35 +211,35 @@ SDL_Rect Graphics::SetSource(unsigned char p_tile) {
 }
 
 void Graphics::TextInit() {
-  TTF_Font* Sans = TTF_OpenFont("sans.ttf", 24); //this opens a font style and sets a size
+  TTF_Font* Sans = TTF_OpenFont("sans.ttf", 24);
 
-  SDL_Color White = {255, 255, 255};  // this is the color in rgb format, maxing out all would give you the color white, and it will be your text's color
+  SDL_Color White = {255, 255, 255}; 
 
-  SDL_Surface* surfaceMessage1 = TTF_RenderText_Solid(Sans, "You did it m8!", White); // as TTF_RenderText_Solid could only be used on SDL_Surface then you have to create the surface first
-  SDL_Surface* surfaceMessage2 = TTF_RenderText_Solid(Sans, "You lose. Get good", White); // as TTF_RenderText_Solid could only be used on SDL_Surface then you have to create the surface first
-  SDL_Surface* surfaceMessage3 = TTF_RenderText_Solid(Sans, "Press 'r' to restart or Esc to exit", White); // as TTF_RenderText_Solid could only be used on SDL_Surface then you have to create the surface first
+  SDL_Surface* surfaceMessage1 = TTF_RenderText_Solid(Sans, "You did it m8!", White);
+  SDL_Surface* surfaceMessage2 = TTF_RenderText_Solid(Sans, "You lose. Get good", White);
+  SDL_Surface* surfaceMessage3 = TTF_RenderText_Solid(Sans, "Press 'r' to restart or Esc to exit", White);
 
-  WinMessage = SDL_CreateTextureFromSurface(renderer, surfaceMessage1); //now you can convert it into a texture
-  LoseMessage = SDL_CreateTextureFromSurface(renderer, surfaceMessage2); //now you can convert it into a texture
-  InstructionMessage = SDL_CreateTextureFromSurface(renderer, surfaceMessage3); //now you can convert it into a texture
+  WinMessage = SDL_CreateTextureFromSurface(renderer, surfaceMessage1);
+  LoseMessage = SDL_CreateTextureFromSurface(renderer, surfaceMessage2);
+  InstructionMessage = SDL_CreateTextureFromSurface(renderer, surfaceMessage3);
 
-  Message_rect.x = (screen_width/2)-250;  //controls the rect's x coordinate 
-  Message_rect.y = screen_height/2; // controls the rect's y coordinte
-  Message_rect.w = 500; // controls the width of the rect
-  Message_rect.h = 100; // controls the height of the rect
+  Message_rect.x = (screen_width/2)-250;
+  Message_rect.y = screen_height/2;
+  Message_rect.w = 500;
+  Message_rect.h = 100;
 }
 
 void Graphics::RenderWin() {
-  SDL_RenderCopy(renderer, WinMessage, NULL, &Message_rect); //you put the renderer's name first, the Message, the crop size(you can ignore this if you don't want to dabble with cropping), and the rect which is the size and coordinate of your texture
+  SDL_RenderCopy(renderer, WinMessage, NULL, &Message_rect);
   Message_rect.y += 100;
-  SDL_RenderCopy(renderer, InstructionMessage, NULL, &Message_rect); //you put the renderer's name first, the Message, the crop size(you can ignore this if you don't want to dabble with cropping), and the rect which is the size and coordinate of your texture
+  SDL_RenderCopy(renderer, InstructionMessage, NULL, &Message_rect);
   SDL_RenderPresent(renderer);
 }
 
 void Graphics::RenderLose() {
-  SDL_RenderCopy(renderer, LoseMessage, NULL, &Message_rect); //you put the renderer's name first, the Message, the crop size(you can ignore this if you don't want to dabble with cropping), and the rect which is the size and coordinate of your texture
+  SDL_RenderCopy(renderer, LoseMessage, NULL, &Message_rect);
   Message_rect.y += 100;
-  SDL_RenderCopy(renderer, InstructionMessage, NULL, &Message_rect); //you put the renderer's name first, the Message, the crop size(you can ignore this if you don't want to dabble with cropping), and the rect which is the size and coordinate of your texture
+  SDL_RenderCopy(renderer, InstructionMessage, NULL, &Message_rect);
   SDL_RenderPresent(renderer);
 }
 
