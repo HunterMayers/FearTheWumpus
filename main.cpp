@@ -28,6 +28,10 @@ int main(int argc, char **argv) {
     n = 8;
   }
 
+  if (pit_count > (n*n)) {
+    pit_count = (n*n);
+  }
+
   //tinyRandomMap map(n, n, 0x0420FEFD, 96);
   for(unsigned int i = 0; i < pit_count; ++i) {
     int wins = 0;
