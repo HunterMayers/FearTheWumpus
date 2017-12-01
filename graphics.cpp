@@ -36,6 +36,7 @@ Graphics::Graphics() {
 
 		IMG_Quit();
   }	
+  TTF_Init();
 }
 
 Graphics::~Graphics() {
@@ -49,7 +50,7 @@ Graphics::~Graphics() {
  * @param p_agent - a pointer to the agent whose knowledge we want to draw to the screen.
  * @param p_man_x - the 
  */
-void Graphics::Render(Agent *p_agent, int n) {
+void Graphics::Render(Agent *p_agent, int n, bool present) {
   unsigned int row, col, dir, x_offset, y_offset;
   unsigned char tile;
   SDL_Rect src, dst;
@@ -75,7 +76,10 @@ void Graphics::Render(Agent *p_agent, int n) {
     }
   }
 
-  SDL_RenderPresent(renderer);
+  if (present) {
+    SDL_RenderPresent(renderer);
+  }
+
   HandleInput();
   SDL_Delay(delay);
 }
@@ -205,3 +209,37 @@ SDL_Rect Graphics::SetSource(unsigned char p_tile) {
 
   return src;
 }
+
+void Graphics::TextInit() {
+  TTF_Font* Sans = TTF_OpenFont("sans.ttf", 24);
+
+  SDL_Color White = {255, 255, 255}; 
+
+  SDL_Surface* surfaceMessage1 = TTF_RenderText_Solid(Sans, "You did it m8!", White);
+  SDL_Surface* surfaceMessage2 = TTF_RenderText_Solid(Sans, "You lose. Get good", White);
+  SDL_Surface* surfaceMessage3 = TTF_RenderText_Solid(Sans, "Press 'r' to restart or Esc to exit", White);
+
+  WinMessage = SDL_CreateTextureFromSurface(renderer, surfaceMessage1);
+  LoseMessage = SDL_CreateTextureFromSurface(renderer, surfaceMessage2);
+  InstructionMessage = SDL_CreateTextureFromSurface(renderer, surfaceMessage3);
+
+  Message_rect.x = (screen_width/2)-250;
+  Message_rect.y = screen_height/2;
+  Message_rect.w = 500;
+  Message_rect.h = 100;
+}
+
+void Graphics::RenderWin() {
+  SDL_RenderCopy(renderer, WinMessage, NULL, &Message_rect);
+  Message_rect.y += 100;
+  SDL_RenderCopy(renderer, InstructionMessage, NULL, &Message_rect);
+  SDL_RenderPresent(renderer);
+}
+
+void Graphics::RenderLose() {
+  SDL_RenderCopy(renderer, LoseMessage, NULL, &Message_rect);
+  Message_rect.y += 100;
+  SDL_RenderCopy(renderer, InstructionMessage, NULL, &Message_rect);
+  SDL_RenderPresent(renderer);
+}
+
